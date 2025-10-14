@@ -3,8 +3,10 @@ info:
   title: Todo List API
   version: 1.0.0
 servers:
+  - url: https://todo-list-production-9b96.up.railway.app
+    description: Production Server (Railway)
   - url: http://localhost:{port}
-    description: Same origin
+    description: Local Development
     variables:
       port:
         default: "5000"
