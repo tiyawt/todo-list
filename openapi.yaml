@@ -12,83 +12,160 @@ servers:
         default: "5000"
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+    # Auth schemas
+    RegisterRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          example: "password123"
+        name:
+          type: string
+          example: "John Doe"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          example: "password123"
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "u_01"
+        email:
+          type: string
+          example: "user@example.com"
+        name:
+          type: string
+          example: "John Doe"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid credentials"
+
+    # Todo schemas
     Todo:
       type: object
       properties:
-        id: { type: string, example: t_01 }
-        title: { type: string, example: "Build Swagger docs" }
+        id:
+          type: string
+          example: "t_01"
+        title:
+          type: string
+          example: "Build Swagger docs"
         description:
-          {
-            type: string,
-            nullable: true,
-            example: "Write OpenAPI & wire Swagger UI",
-          }
+          type: string
+          nullable: true
+          example: "Write OpenAPI & wire Swagger UI"
         dueDate:
-          {
-            type: string,
-            format: date-time,
-            example: "2025-10-15T09:30:00.000Z",
-          }
+          type: string
+          format: date-time
+          example: "2025-10-15T09:30:00.000Z"
         status:
-          {
-            type: string,
-            enum: [pending, done],
-            default: pending,
-            example: pending,
-          }
+          type: string
+          enum: [pending, done]
+          default: pending
+          example: "pending"
 
     TodoCreate:
       type: object
       required: [title]
       properties:
-        title: { type: string, example: "Build Swagger docs" }
+        title:
+          type: string
+          example: "Build Swagger docs"
         description:
-          { type: string, example: "Write OpenAPI & wire Swagger UI" }
+          type: string
+          example: "Write OpenAPI & wire Swagger UI"
         dueDate:
-          {
-            type: string,
-            format: date-time,
-            example: "2025-10-15T09:30:00.000Z",
-          }
+          type: string
+          format: date-time
+          example: "2025-10-15T09:30:00.000Z"
         status:
-          {
-            type: string,
-            enum: [pending, done],
-            default: pending,
-            example: pending,
-          }
+          type: string
+          enum: [pending, done]
+          default: pending
+          example: "pending"
 
     TodoUpdate:
       type: object
       properties:
-        title: { type: string, example: "Build Swagger docs (v2)" }
-        description: { type: string, example: "Add delete-all and polish" }
+        title:
+          type: string
+          example: "Build Swagger docs (v2)"
+        description:
+          type: string
+          example: "Add delete-all and polish"
         dueDate:
-          {
-            type: string,
-            format: date-time,
-            example: "2025-10-16T07:00:00.000Z",
-          }
-        status: { type: string, enum: [pending, done], example: done }
+          type: string
+          format: date-time
+          example: "2025-10-16T07:00:00.000Z"
+        status:
+          type: string
+          enum: [pending, done]
+          example: "done"
 
     PaginatedTodos:
       type: object
       properties:
         data:
           type: array
-          items: { $ref: "#/components/schemas/Todo" }
+          items:
+            $ref: "#/components/schemas/Todo"
         meta:
           type: object
           properties:
-            page: { type: integer, example: 1 }
-            limit: { type: integer, example: 10 }
-            total: { type: integer, example: 42 }
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 42
 
     Message:
       type: object
       properties:
-        message: { type: string, example: Deleted }
+        message:
+          type: string
+          example: "Deleted"
 
 paths:
   /api/auth/register:
@@ -100,18 +177,21 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/RegisterRequest" }
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
         "201":
           description: Created
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/User" }
+              schema:
+                $ref: "#/components/schemas/User"
         "400":
           description: Email already registered
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/auth/login:
     post:
@@ -122,31 +202,39 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/LoginRequest" }
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/LoginResponse" }
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
         "400":
           description: Invalid email/password
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/todos:
     get:
       tags: [todos]
       summary: List todos (paginate)
-      security: [{ BearerAuth: [] }]
+      security:
+        - BearerAuth: []
       parameters:
         - in: query
           name: page
-          schema: { type: integer, default: 1 }
+          schema:
+            type: integer
+            default: 1
         - in: query
           name: limit
-          schema: { type: integer, default: 10 }
+          schema:
+            type: integer
+            default: 10
       responses:
         "200":
           description: OK
@@ -157,100 +245,121 @@ paths:
                 properties:
                   data:
                     type: array
-                    items: { $ref: "#/components/schemas/Todo" }
+                    items:
+                      $ref: "#/components/schemas/Todo"
                   meta:
                     type: object
                     properties:
-                      page: { type: integer }
-                      limit: { type: integer }
-                      total: { type: integer }
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
         "401":
           description: Unauthorized
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+              schema:
+                $ref: "#/components/schemas/Error"
     post:
       tags: [todos]
       summary: Create todo
-      security: [{ BearerAuth: [] }]
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/TodoCreate" }
+            schema:
+              $ref: "#/components/schemas/TodoCreate"
       responses:
         "201":
           description: Created
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Todo" }
+              schema:
+                $ref: "#/components/schemas/Todo"
     delete:
       tags: [todos]
       summary: Delete all todos
       description: Hapus semua todo. Gunakan hati-hati.
-      security: [{ BearerAuth: [] }]
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Message" }
+              schema:
+                $ref: "#/components/schemas/Message"
         "401":
           description: Unauthorized
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+              schema:
+                $ref: "#/components/schemas/Error"
         "403":
           description: Forbidden (only admin can delete all)
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/todos/{id}:
     get:
       tags: [todos]
       summary: Get todo by id
-      security: [{ BearerAuth: [] }]
+      security:
+        - BearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
-          schema: { type: string }
+          schema:
+            type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Todo" }
+              schema:
+                $ref: "#/components/schemas/Todo"
     put:
       tags: [todos]
       summary: Update todo
-      security: [{ BearerAuth: [] }]
+      security:
+        - BearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
-          schema: { type: string }
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/TodoUpdate" }
+            schema:
+              $ref: "#/components/schemas/TodoUpdate"
       responses:
         "200":
           description: Updated
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Todo" }
+              schema:
+                $ref: "#/components/schemas/Todo"
     delete:
       tags: [todos]
       summary: Delete todo by id
-      security: [{ BearerAuth: [] }]
+      security:
+        - BearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
-          schema: { type: string }
+          schema:
+            type: string
       responses:
         "204":
           description: No Content
