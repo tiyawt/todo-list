@@ -21,16 +21,13 @@ const spec = yaml.parse(fs.readFileSync(specPath, "utf8"));
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
-app.options("*", cors());
 
 app.use(express.json());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec, { explorer: true }));
