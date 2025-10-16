@@ -5,11 +5,8 @@ info:
 servers:
   - url: https://todo-list-production-9b96.up.railway.app
     description: Production Server (Railway)
-  - url: http://localhost:{port}
+  - url: http://localhost:5000
     description: Local Development
-    variables:
-      port:
-        default: "5000"
 
 components:
   securitySchemes:
@@ -361,5 +358,21 @@ paths:
           schema:
             type: string
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
