@@ -111,17 +111,31 @@ todo-list-api/
 | DELETE | `/api/todos/:id` | Delete todo | ✅ |
 | DELETE | `/api/todos` | Delete all todos (admin) | ✅ |
 
-## 📝 API Usage Examples
+## API Documentation
 
-### Register
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "password123",
-    "name": "John Doe"
-  }'
+### Authentication
+
+#### POST /api/auth/register
+    Mendaftarkan pengguna baru.
+    Request body:
+```json
+{
+  "name": "Tiya",
+  "email": "tiya@example.com",
+  "password": "123456"
+}
+```
+  Response:
+```json
+  {
+  "message": "User registered successfully",
+  "user": {
+    "id": "66f8a7d8b26...",
+    "email": "tiya@example.com",
+    "name": "Tiya"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIs..."
+}
 ```
 
 ### Login
