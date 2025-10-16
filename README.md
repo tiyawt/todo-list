@@ -116,8 +116,8 @@ todo-list-api/
 ### Authentication
 
 #### POST /api/auth/register
-    Mendaftarkan pengguna baru.
-    Request body:
+Mendaftarkan pengguna baru.
+Request body:
 ```json
 {
   "name": "Tiya",
@@ -125,9 +125,9 @@ todo-list-api/
   "password": "123456"
 }
 ```
-  Response:
+Response:
 ```json
-  {
+{
   "message": "User registered successfully",
   "user": {
     "id": "66f8a7d8b26...",
@@ -137,46 +137,148 @@ todo-list-api/
   "token": "eyJhbGciOiJIUzI1NiIs..."
 }
 ```
-
-### Login
-```bash
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "password123"
-  }'
+####POST /api/auth/login
+Login user dan mendapatkan token JWT.
+Request Body:
+```json
+{
+  "email": "tiya@example.com",
+  "password": "123456"
+}
 ```
-
 Response:
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "message": "Login success",
+  "token": "eyJhbGciOiJIUzI1NiIs...",
   "user": {
-    "id": "123",
-    "email": "user@example.com",
-    "name": "John Doe"
+    "id": "66f8a7d8b26...",
+    "email": "tiya@example.com",
+    "name": "Tiya"
   }
 }
 ```
 
-### Create Todo
-```bash
-curl -X POST http://localhost:5000/api/todos \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{
-    "title": "Learn Express.js",
-    "description": "Build REST API with authentication",
-    "dueDate": "2025-10-20T10:00:00.000Z",
-    "status": "pending"
-  }'
-```
+### Todos
 
-### Get All Todos (with pagination)
-```bash
-curl -X GET "http://localhost:5000/api/todos?page=1&limit=10" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+#### GET /api/todos
+Mengambil semua todo milik user (mendukung pagination).
+Query Params:
+    - page (default: 1)
+    - limit (default: 10)
+
+Headers:
+```json
+Authorization: Bearer <token>
+```
+Response:
+```json
+{
+  "data": [
+    {
+      "id": "t_01",
+      "title": "Build Swagger docs",
+      "description": "Write OpenAPI & wire Swagger UI",
+      "dueDate": "2025-10-15T09:30:00.000Z",
+      "status": "pending"
+    }
+  ],
+  "meta": {
+    "page": 0,
+    "limit": 0,
+    "total": 0
+  }
+}
+```
+#### GET /api/todos/:id
+Mengambil todo berdasarkan ID.
+Headers:
+```json
+Authorization: Bearer <token>
+```
+Response:
+```json
+{
+  "id": "t_01",
+  "title": "Build Swagger docs",
+  "description": "Write OpenAPI & wire Swagger UI",
+  "dueDate": "2025-10-15T09:30:00.000Z",
+  "status": "pending"
+}
+```
+#### POST /api/todos
+Menambahkan todo baru.
+Headers:
+```json
+Authorization: Bearer <token>
+```
+Request body:
+```json
+{
+  "title": "Build Swagger docs",
+  "description": "Write OpenAPI & wire Swagger UI",
+  "dueDate": "2025-10-15T09:30:00.000Z",
+  "status": "pending"
+}
+```
+Response:
+```json
+{
+  "id": "t_01",
+  "title": "Build Swagger docs",
+  "description": "Write OpenAPI & wire Swagger UI",
+  "dueDate": "2025-10-15T09:30:00.000Z",
+  "status": "pending"
+}
+```
+#### PUT /api/todos
+Mengedit todo
+Headers:
+```json
+Authorization: Bearer <token>
+```
+Request body:
+```json
+{
+  "title": "Build Swagger docs (v2)",
+  "description": "Add delete-all and polish",
+  "dueDate": "2025-10-16T07:00:00.000Z",
+  "status": "done"
+}
+```
+Response:
+```json
+{
+  "id": "t_01",
+  "title": "Build Swagger docs",
+  "description": "Write OpenAPI & wire Swagger UI",
+  "dueDate": "2025-10-15T09:30:00.000Z",
+  "status": "pending"
+}
+```
+#### DELETE /api/todos/:id
+Menghapus todo berdasarkan ID.
+Headers:
+```json
+Authorization: Bearer <token>
+```
+Response:
+```json
+{
+  "message": "Deleted"
+}
+```
+#### DELETE /api/todos
+Menghapus semua todo
+Headers:
+```json
+Authorization: Bearer <token>
+```
+Response:
+```json
+{
+  "message": "Deleted"
+}
 ```
 
 ## Authentication
